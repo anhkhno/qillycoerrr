@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>qillycoer — Order Tracker</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍑</text></svg>" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Poppins:ital,wght@0,400;0,500;0,600;1,500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<style>
+  :root{
+    --cream:#FFF9EF;
+    --pink-light:#FBDCE7;
+    --pink:#F1A4C4;
+    --pink-deep:#C7548A;
+    --yellow-light:#FFF0C2;
+    --yellow:#FFD874;
+    --yellow-deep:#E8AA1F;
+    --ink:#4A2E3B;
+    --ink-soft:#8A6B78;
+    --white:#FFFFFF;
+    --mint:#CDEBD6;
+    --mint-deep:#3F8F5C;
+    --sky:#CDE3F5;
+    --sky-deep:#3B76AE;
+    --radius:22px;
+    --shadow:0 10px 28px rgba(199,84,138,0.12);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(circle at 8% 4%, var(--yellow-light) 0%, transparent 38%),
+      radial-gradient(circle at 96% 12%, var(--pink-light) 0%, transparent 42%),
+      var(--cream);
+    color:var(--ink);
+    font-family:'Poppins', sans-serif;
+    line-height:1.5;
+    min-height:100vh;
+  }
+  h1,h2,h3,.brand{
+    font-family:'Fredoka', sans-serif;
+    margin:0;
+  }
+  .wrap{
+    max-width:760px;
+    margin:0 auto;
+    padding:0 20px 64px;
+  }
+
+  /* ---- Announcement banner ---- */
+  .banner{
+    background:linear-gradient(90deg, var(--yellow) 0%, var(--yellow-light) 100%);
+    color:var(--ink);
+    padding:12px 20px;
+    text-align:center;
+    font-size:14px;
+    font-weight:500;
+    border-bottom:2px dashed rgba(74,46,59,0.18);
+  }
+  .banner strong{color:var(--pink-deep);}
+
+  /* ---- Header ---- */
+  header{
+    padding:44px 0 28px;
+    text-align:center;
+  }
+  .brand{
+    display:inline-flex;
+    align-items:center;
+    gap:10px;
+    font-size:34px;
+    font-weight:700;
+    color:var(--pink-deep);
+  }
+  .brand .dot{
+    width:10px;height:10px;border-radius:50%;
+    background:var(--yellow-deep);
+    display:inline-block;
+  }
+  header p{
+    margin:10px auto 0;
+    max-width:420px;
+    color:var(--ink-soft);
+    font-size:15px;
+  }
+
+  /* ---- Search card ---- */
+  .search-card{
+    background:var(--white);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    padding:26px;
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+  }
+  .search-card label{
+    font-weight:600;
+    font-size:14px;
+    color:var(--pink-deep);
+  }
+  .search-row{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+  .search-row input{
+    flex:1 1 220px;
+    padding:13px 16px;
+    border-radius:14px;
+    border:2px solid var(--pink-light);
+    font-family:'Poppins',sans-serif;
+    font-size:15px;
+    background:var(--cream);
+    color:var(--ink);
+    outline:none;
+    transition:border-color .15s ease;
+  }
+  .search-row input:focus{border-color:var(--pink);}
+  .search-row button{
+    padding:13px 22px;
+    border-radius:14px;
+    border:none;
+    background:var(--pink-deep);
+    color:var(--white);
+    font-family:'Fredoka',sans-serif;
+    font-weight:600;
+    font-size:15px;
+    cursor:pointer;
+    transition:transform .12s ease, background .15s ease;
+  }
+  .search-row button:hover{background:#b1447a;}
+  .search-row button:active{transform:scale(0.97);}
+  .search-hint{font-size:12.5px;color:var(--ink-soft);}
+  .status-line{font-size:13.5px;color:var(--ink-soft);min-height:18px;}
+
+  /* ---- Results ---- */
+  #results{margin-top:34px;display:none;}
+  #results.visible{display:block;}
+
+  .customer-heading{
+    text-align:center;
+    margin-bottom:22px;
+  }
+  .customer-heading h2{
+    font-size:22px;
+    color:var(--ink);
+  }
+  .customer-heading span{
+    color:var(--pink-deep);
+  }
+
+  .stat-grid{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:12px;
+    margin-bottom:30px;
+  }
+  @media (min-width:520px){
+    .stat-grid{grid-template-columns:repeat(3, 1fr);}
+  }
+  .stat-card{
+    background:var(--white);
+    border-radius:16px;
+    padding:16px 10px;
+    text-align:center;
+    box-shadow:0 6px 16px rgba(199,84,138,0.08);
+    border-bottom:4px solid var(--pink-light);
+  }
+  .stat-card .num{
+    font-family:'Fredoka',sans-serif;
+    font-size:26px;
+    font-weight:700;
+    color:var(--pink-deep);
+  }
+  .stat-card .lbl{
+    font-size:12px;
+    color:var(--ink-soft);
+    margin-top:2px;
+    font-weight:500;
+  }
+  .stat-card.total{border-bottom-color:var(--yellow-deep);}
+  .stat-card.total .num{color:var(--yellow-deep);}
+  .stat-card.secured{border-bottom-color:var(--mint-deep);}
+  .stat-card.secured .num{color:var(--mint-deep);}
+  .stat-card.transit{border-bottom-color:var(--sky-deep);}
+  .stat-card.transit .num{color:var(--sky-deep);}
+  .stat-card.admin{border-bottom-color:var(--pink-deep);}
+  .stat-card.posted{border-bottom-color:#8A6B78;}
+
+  .order-list{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+  }
+  .order-card{
+    background:var(--white);
+    border-radius:16px;
+    padding:16px 18px;
+    box-shadow:0 6px 16px rgba(199,84,138,0.07);
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:14px;
+    flex-wrap:wrap;
+  }
+  .order-main{flex:1 1 220px;}
+  .order-id{
+    font-size:11.5px;
+    font-weight:600;
+    color:var(--ink-soft);
+    letter-spacing:.02em;
+  }
+  .order-item{
+    font-size:15.5px;
+    font-weight:600;
+    margin-top:2px;
+  }
+  .order-meta{
+    font-size:12.5px;
+    color:var(--ink-soft);
+    margin-top:4px;
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+  .badge{
+    display:inline-block;
+    padding:6px 13px;
+    border-radius:100px;
+    font-size:12px;
+    font-weight:600;
+    white-space:nowrap;
+  }
+  .badge.secured{background:var(--mint);color:var(--mint-deep);}
+  .badge.transit{background:var(--sky);color:var(--sky-deep);}
+  .badge.admin{background:var(--pink-light);color:var(--pink-deep);}
+  .badge.posted{background:#EDE3E7;color:var(--ink-soft);}
+  .badge.other{background:var(--yellow-light);color:var(--yellow-deep);}
+
+  .empty-state{
+    text-align:center;
+    padding:40px 20px;
+    color:var(--ink-soft);
+    background:var(--white);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+  }
+  .empty-state .big{font-size:34px;margin-bottom:8px;}
+
+  footer{
+    text-align:center;
+    margin-top:50px;
+    font-size:12.5px;
+    color:var(--ink-soft);
+  }
+</style>
+</head>
+<body>
+
+<!-- ================= ANNOUNCEMENT BANNER =================
+     Edit the text below directly to change the welcome message / reminders. -->
+<div class="banner">
+  🌷 <strong>Welcome to qillycoer!</strong> Search your Telegram username below to check your order status. Reminder: payments are only accepted via the official methods pinned in the group chat. 🌷
+</div>
+
+<div class="wrap">
+  <header>
+    <div class="brand"><span class="dot"></span>qillycoer</div>
+    <p>Your one-stop order tracker — pop in your Telegram username to see exactly where your goodies are.</p>
+  </header>
+
+  <div class="search-card">
+    <label for="searchInput">Track your order</label>
+    <div class="search-row">
+      <input id="searchInput" type="text" placeholder="@yourtelegramusername" autocomplete="off" />
+      <button id="searchBtn">Search</button>
+    </div>
+    <div class="search-hint">Tip: enter it exactly as it appears on Telegram — the @ is optional.</div>
+    <div class="status-line" id="statusLine"></div>
+  </div>
+
+  <div id="results">
+    <div class="customer-heading">
+      <h2>Orders for <span id="customerName"></span></h2>
+    </div>
+
+    <div class="stat-grid" id="statGrid"></div>
+
+    <div class="order-list" id="orderList"></div>
+  </div>
+</div>
+
+<footer>made with 🍑 for the qillycoer fam</footer>
+
+<script>
+/* =====================================================================
+   CONFIG — edit these if your sheet ID or tab names ever change.
+   The Google Sheet must be shared as "Anyone with the link – Viewer"
+   for this page to be able to read it.
+   ===================================================================== */
+const SHEET_ID = "1Gc6oy0_d6dE7_SWtb3d6Sl93jRinKYnPKa23swH6QTM";
+const SHEET_TABS = ["kr", "jp", "ch", "my", "xianyu", "Sheet6"];
+
+// Column layout within each tab (0-indexed): A=0, B=1, C=2, D=3, E=4, F=5, G=6
+const COL = { orderId: 1, item: 2, telegram: 3, price: 4, payment: 5, status: 6 };
+
+/* ===================================================================== */
+
+const statusLine = document.getElementById('statusLine');
+const searchInput = document.getElementById('searchInput');
+const searchBtn = document.getElementById('searchBtn');
+const results = document.getElementById('results');
+const customerName = document.getElementById('customerName');
+const statGrid = document.getElementById('statGrid');
+const orderList = document.getElementById('orderList');
+
+let ALL_ORDERS = [];
+let dataReady = false;
+
+function normalizeHandle(raw){
+  return (raw || '').trim().toLowerCase().replace(/^@/, '');
+}
+
+function classifyStatus(raw){
+  const s = (raw || '').toLowerCase();
+  if (s.includes('secured') || s.includes('paid to the seller')) return 'secured';
+  if (s.includes('otw to wh') || s.includes('on the way to wh')) return 'transit';
+  if (s.includes('arrived') && s.includes('wh') && !s.includes('admin')) return 'transit';
+  if (s.includes('otw to my') || s.includes('on the way to my') || s.includes('otw to malaysia')) return 'transit';
+  if (s.includes('admin house')) return 'admin';
+  if (s.includes('posted')) return 'posted';
+  return 'other';
+}
+
+const STATUS_LABEL = {
+  secured: 'Secured',
+  transit: 'In Transit',
+  admin: 'Admin House',
+  posted: 'Posted Out',
+  other: 'Processing'
+};
+
+async function fetchTab(tabName){
+  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(tabName)}`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('sheet fetch failed: ' + tabName);
+  const csvText = await res.text();
+  const parsed = Papa.parse(csvText.trim(), { skipEmptyLines: false });
+  const rows = parsed.data;
+
+  const orders = [];
+  for (const row of rows){
+    const telegram = (row[COL.telegram] || '').trim();
+    const item = (row[COL.item] || '').trim();
+    if (!telegram) continue; // rows without a customer handle aren't a trackable order
+    orders.push({
+      orderId: (row[COL.orderId] || '').trim(),
+      item: item,
+      telegram: telegram,
+      handle: normalizeHandle(telegram),
+      price: (row[COL.price] || '').trim(),
+      payment: (row[COL.payment] || '').trim(),
+      statusRaw: (row[COL.status] || '').trim(),
+      status: classifyStatus(row[COL.status]),
+      region: tabName
+    });
+  }
+  return orders;
+}
+
+async function loadAllOrders(){
+  statusLine.textContent = 'Loading masterlist…';
+  const settled = await Promise.allSettled(SHEET_TABS.map(fetchTab));
+  let combined = [];
+  let failedTabs = [];
+  settled.forEach((r, i) => {
+    if (r.status === 'fulfilled') combined = combined.concat(r.value);
+    else failedTabs.push(SHEET_TABS[i]);
+  });
+  ALL_ORDERS = combined;
+  dataReady = true;
+
+  if (combined.length === 0){
+    statusLine.textContent = 'Couldn\'t load the masterlist. Make sure the Google Sheet is shared as "Anyone with the link – Viewer".';
+  } else if (failedTabs.length){
+    statusLine.textContent = `Loaded. (Couldn't read tab(s): ${failedTabs.join(', ')})`;
+  } else {
+    statusLine.textContent = '';
+  }
+}
+
+function renderStats(orders){
+  const counts = { secured: 0, transit: 0, admin: 0, posted: 0, other: 0 };
+  orders.forEach(o => counts[o.status]++);
+
+  const cards = [
+    { cls: 'total', num: orders.length, lbl: 'Total Orders' },
+    { cls: 'secured', num: counts.secured, lbl: 'Secured' },
+    { cls: 'transit', num: counts.transit, lbl: 'In Transit' },
+    { cls: 'admin', num: counts.admin, lbl: 'Admin House' },
+    { cls: 'posted', num: counts.posted, lbl: 'Posted Out' }
+  ];
+  if (counts.other > 0){
+    cards.push({ cls: 'other', num: counts.other, lbl: 'Processing' });
+  }
+
+  statGrid.innerHTML = cards.map(c => `
+    <div class="stat-card ${c.cls}">
+      <div class="num">${c.num}</div>
+      <div class="lbl">${c.lbl}</div>
+    </div>
+  `).join('');
+}
+
+function renderOrders(orders){
+  if (orders.length === 0){
+    orderList.innerHTML = '';
+    return;
+  }
+  orderList.innerHTML = orders.map(o => `
+    <div class="order-card">
+      <div class="order-main">
+        <div class="order-id">${o.orderId ? o.orderId : o.region.toUpperCase()}</div>
+        <div class="order-item">${escapeHtml(o.item || 'Untitled item')}</div>
+        <div class="order-meta">
+          ${o.price ? `<span>${escapeHtml(o.price)}</span>` : ''}
+          ${o.payment ? `<span>${escapeHtml(o.payment)}</span>` : ''}
+        </div>
+      </div>
+      <span class="badge ${o.status}">${STATUS_LABEL[o.status]}</span>
+    </div>
+  `).join('');
+}
+
+function escapeHtml(str){
+  return str.replace(/[&<>"']/g, m => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[m]));
+}
+
+async function doSearch(){
+  const raw = searchInput.value;
+  const handle = normalizeHandle(raw);
+  if (!handle){
+    statusLine.textContent = 'Type your Telegram username first.';
+    return;
+  }
+
+  if (!dataReady){
+    statusLine.textContent = 'Still loading the masterlist, one sec…';
+    await loadAllOrders();
+  }
+
+  const matches = ALL_ORDERS.filter(o => o.handle === handle);
+
+  results.classList.add('visible');
+  customerName.textContent = '@' + handle;
+
+  if (matches.length === 0){
+    statGrid.innerHTML = '';
+    orderList.innerHTML = `
+      <div class="empty-state">
+        <div class="big">🍑</div>
+        No orders found for <strong>@${escapeHtml(handle)}</strong>.<br/>
+        Double check your Telegram username, or message admin if you think this is a mistake.
+      </div>
+    `;
+    return;
+  }
+
+  renderStats(matches);
+  renderOrders(matches);
+}
+
+searchBtn.addEventListener('click', doSearch);
+searchInput.addEventListener('keydown', e => { if (e.key === 'Enter') doSearch(); });
+
+loadAllOrders();
+</script>
+</body>
+</html>
