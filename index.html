@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>qillycoer — order tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Karla:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="banner" id="banner">
+    <div class="banner-inner">
+      <span class="banner-icon">✿</span>
+      <p id="bannerText">Welcome to the masterlist! Orders update as they move — search your Telegram username below to check on yours 💌</p>
+    </div>
+  </div>
+
+  <header class="hero">
+    <p class="hero-eyebrow">qillycoer masterlist</p>
+    <h1>track your order</h1>
+    <p class="hero-sub">Type your Telegram username to see everything you've ordered and where it's at.</p>
+
+    <form id="searchForm" class="search-form" autocomplete="off">
+      <span class="at-sign">@</span>
+      <input type="text" id="searchInput" placeholder="your telegram username" />
+      <button type="submit">search</button>
+    </form>
+    <p class="search-hint" id="searchHint"></p>
+  </header>
+
+  <main id="results" class="results hidden">
+
+    <section class="dashboard">
+      <div class="stat-card stat-total">
+        <span class="stat-num" id="statTotal">0</span>
+        <span class="stat-label">total orders</span>
+      </div>
+      <div class="stat-card stat-secured">
+        <span class="stat-num" id="statSecured">0</span>
+        <span class="stat-label">secured</span>
+      </div>
+      <div class="stat-card stat-transit">
+        <span class="stat-num" id="statTransit">0</span>
+        <span class="stat-label">in transit</span>
+      </div>
+      <div class="stat-card stat-admin">
+        <span class="stat-num" id="statAdmin">0</span>
+        <span class="stat-label">admin house</span>
+      </div>
+      <div class="stat-card stat-posted">
+        <span class="stat-num" id="statPosted">0</span>
+        <span class="stat-label">posted out</span>
+      </div>
+    </section>
+
+    <section class="order-list" id="orderList"></section>
+
+  </main>
+
+  <p id="emptyState" class="empty-state hidden">No orders found under that username — double check the spelling, or message admin if you think this is a mistake!</p>
+  <p id="loadingState" class="loading-state hidden">loading the masterlist…</p>
+
+  <footer class="site-footer">
+    <p>made with 🎀 for qillycoer customers</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
