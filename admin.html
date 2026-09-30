@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>admin — qillycoer masterlist</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Karla:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body>
+
+  <header class="hero admin-hero">
+    <p class="hero-eyebrow">qillycoer masterlist</p>
+    <h1>admin</h1>
+    <p class="hero-sub">Sign in with the Google account that has edit access to the sheet, then add new orders straight from here.</p>
+  </header>
+
+  <main class="admin-wrap">
+
+    <section id="signedOutView" class="admin-card">
+      <button id="signInBtn" class="google-btn">Sign in with Google</button>
+      <p id="authError" class="form-msg form-msg-error hidden"></p>
+    </section>
+
+    <section id="signedInView" class="admin-card hidden">
+      <div class="admin-identity">
+        <span id="adminEmail"></span>
+        <button id="signOutBtn" class="text-btn">sign out</button>
+      </div>
+
+      <form id="addOrderForm" class="admin-form">
+        <label>
+          tab
+          <select id="fTab" required></select>
+        </label>
+
+        <label>
+          order code <span class="optional">(optional)</span>
+          <input type="text" id="fCode" placeholder="#KR_04" />
+        </label>
+
+        <label>
+          item
+          <input type="text" id="fItem" placeholder="Cortis wvs album" required />
+        </label>
+
+        <label>
+          customer's telegram username
+          <div class="at-field">
+            <span>@</span>
+            <input type="text" id="fTelegram" placeholder="username" required />
+          </div>
+        </label>
+
+        <label>
+          price <span class="optional">(optional)</span>
+          <input type="text" id="fPrice" placeholder="RM60" />
+        </label>
+
+        <label>
+          payment status <span class="optional">(optional)</span>
+          <input type="text" id="fPayment" placeholder="full payment" />
+        </label>
+
+        <label>
+          order status
+          <select id="fStatus" required></select>
+        </label>
+
+        <button type="submit" class="submit-btn" id="submitBtn">add order</button>
+        <p id="formMsg" class="form-msg hidden"></p>
+      </form>
+    </section>
+
+    <a href="index.html" class="back-link">← back to search</a>
+  </main>
+
+  <script src="config.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>
