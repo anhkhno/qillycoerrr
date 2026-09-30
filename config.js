@@ -50,7 +50,7 @@ const CONFIG = {
     // is done by who you've shared the sheet with as Editor — this list
     // is just cosmetic, not security.
     EXPECTED_ADMIN_EMAILS: [
-      // "you@gmail.com",
+      // "zfrhzlfh@gmail.com",
     ],
   },
 };
